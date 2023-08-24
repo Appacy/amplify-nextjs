@@ -1,12 +1,11 @@
 import Image from 'next/image'
 import styles from './page.module.css'
-import UserData from './user-data'
+import DoLogout from './logout'
 
-export default function Home() {
+export default function Logout() {
   return (
     <main className={styles.container}>
-      <h1>Home Page</h1>
-      <UserData />
+      <DoLogout />
     </main>
   )
 }
