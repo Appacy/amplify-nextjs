@@ -28,12 +28,14 @@ export default function RootLayout({
         <AuthProvider>
           <div className='wrapper'>
             <div>
-              <Image
-                src='/appacy.png'
-                width={60}
-                height={60}
-                alt='Appacy Ltd'
-              />
+              <a href='https://appacy.uk' target='_blank'>
+                <Image
+                  src='/appacy.svg'
+                  width={60}
+                  height={60}
+                  alt='Appacy Ltd'
+                />
+              </a>
             </div>
             <header className='header'>
               <a href="/">Home Page</a>
