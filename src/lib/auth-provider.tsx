@@ -1,6 +1,6 @@
 'use client'
 
-import { FC, createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { FC, createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { Amplify, Auth, Hub } from "aws-amplify";
 import awsExports from "../aws-exports";
 import { Attributes, User, HubCapsule, AuthError, Status } from './types';
@@ -28,7 +28,7 @@ const AuthContext = createContext<AuthContextModel>({
     isAuthenticated: false,
     status: 'idle',
     logout: () => { return Promise.resolve() },
-    login: (username: string, password: string, newPassword?: string) => { return Promise.resolve({}) },
+    login: (username: string, password: string) => { return Promise.resolve({}) },
     completeNewPassword: (user: User, newPassword: string) => Promise.resolve({}),
     isUser: (obj: User | AuthError) => false,
     isAuthError: (obj: User | AuthError | string) => false,

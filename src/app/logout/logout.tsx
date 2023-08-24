@@ -10,7 +10,7 @@ export default function DoLogout() {
     const [message, setMessage] = useState<string>('Logging out...');
     
     useEffect(() => {
-        logout().then(result => {
+        logout().then(() => {
             setMessage('Logged out. Redirecting to login...');
             setTimeout(() => {
                 router.replace('/login');

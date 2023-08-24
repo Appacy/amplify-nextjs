@@ -13,7 +13,7 @@ type LoginFormData = {
 }
 export default function DoLogin() {
     const router = useRouter();
-    const {isAuthenticated, status, login, isUser, isAuthError} = useAuth();
+    const {isAuthenticated, status, login, completeNewPassword, isUser, isAuthError} = useAuth();
     const [message, setMessage] = useState<string>('');
     const [challenge, setChallenge] = useState<ChallengeName>();
     const [formData, setFormData] = useState<LoginFormData>({
@@ -32,13 +32,22 @@ export default function DoLogin() {
     const handleSubmit = (e: MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
 
-        login(formData.username, formData.password, formData.newPassword).then(result => {
+        login(formData.username, formData.password).then(result => {
             if (isUser(result)) {
                 if ((result as User).getSignInUserSession()?.isValid()) {
                     setMessage(`Logged in as ${(result as User).attributes?.email}. Redirecting to home page...`);
                     setTimeout(() => {
                         router.push('/');
                     },2000)
+                } else if (challenge && challenge === 'NEW_PASSWORD_REQUIRED' && formData.newPassword.length) {
+                    completeNewPassword((result as User), formData.newPassword).then(data => {
+                        if (isUser(data)) {
+                            setMessage(`New password complete. Logged in as ${(result as User).attributes?.email}. Redirecting to home page...`);
+                            setTimeout(() => {
+                                router.push('/');
+                            },2000)
+                        }
+                    })
                 } else {
                     const challengeName = (result as User).challengeName;
                     if (challengeName) {
@@ -58,7 +67,8 @@ export default function DoLogin() {
     return (
         <form>
             <div>
-                <p>Test credentials: test@appacy.dev / password1</p>
+                <p>Test credentials (User Group): test@appacy.dev / password1</p>
+                <p>Test credentials (Admin Group): test1@appacy.dev / password1</p>
             </div>
             <div>
                 <label 
