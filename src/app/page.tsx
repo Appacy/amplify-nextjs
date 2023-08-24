@@ -5,7 +5,7 @@ import UserData from './user-data'
 export default function Home() {
   return (
     <main className={styles.container}>
-      <h1>Home Page</h1>
+      <h3>Home Page</h3>
       <UserData />
     </main>
   )

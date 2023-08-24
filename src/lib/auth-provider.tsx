@@ -38,15 +38,16 @@ const AuthProvider: FC<AuthProps> = ({children}) => {
 
     useEffect(() => {
         Auth.currentAuthenticatedUser().then((_user) => {
-            setUser((_user as User));
+            if (isUser(_user)) setUser((_user as User));
         }).catch((error) => {
+            setIsAuthenticated(false);
+            setIdToken(undefined)
+            setAttributes(undefined);
             console.log("Auth.currentAuthenticatedUser error", error);
         })
 
         return () => {
-            setIsAuthenticated(false);
-            setIdToken(undefined)
-            setAttributes(undefined);
+            resetUser();
         }
     }, [])
 
@@ -160,6 +161,12 @@ const AuthProvider: FC<AuthProps> = ({children}) => {
         }
     }
 
+    function resetUser() {
+        setIsAuthenticated(false);
+        setIdToken(undefined)
+        setAttributes(undefined);
+    }
+
     async function login(username: string, password: string, newPassword?: string): Promise<User | AuthError> {
         return await Auth.signIn({ username: username, password: password}).then(result => {
             console.log(result);
@@ -180,9 +187,7 @@ const AuthProvider: FC<AuthProps> = ({children}) => {
 
     async function logout() {
         await Auth.signOut().then(result => {
-            setIsAuthenticated(false);
-            setIdToken(undefined);
-            setAttributes(undefined);
+            resetUser();
             return result;
         }).catch(error => {
             return error;
