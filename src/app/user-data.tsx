@@ -19,7 +19,7 @@ export default function UserData() {
             {attributes?.groups && (
                 <>
                     <p><strong>Groups:</strong></p>
-                    <ul>
+                    <ul style={{paddingInlineStart: '40px'}}>
                         {attributes.groups.map((group, index) => {
                             return (
                                 <li key={index}>{group}</li>

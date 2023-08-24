@@ -13,7 +13,7 @@ type LoginFormData = {
 }
 export default function DoLogin() {
     const router = useRouter();
-    const {isAuthenticated, login, isUser, isAuthError} = useAuth();
+    const {isAuthenticated, status, login, isUser, isAuthError} = useAuth();
     const [message, setMessage] = useState<string>('');
     const [challenge, setChallenge] = useState<ChallengeName>();
     const [formData, setFormData] = useState<LoginFormData>({
@@ -58,6 +58,9 @@ export default function DoLogin() {
     return (
         <form>
             <div>
+                <p>Test credentials: test@appacy.dev / password1</p>
+            </div>
+            <div>
                 <label 
                     htmlFor='username'
                 >
@@ -100,13 +103,17 @@ export default function DoLogin() {
                     />
                 </div>
             )}
-            <div>
-                <button 
-                    type='button' 
-                    onClick={handleSubmit}
-                >
-                    {challenge ? `Complete ${challenge}` : 'Login'}
-                </button>
+            <div style={{textAlign: 'center'}}>
+                {status === 'pending' ? (
+                    <p>Loading...</p>
+                ) : (
+                    <button 
+                        type='button' 
+                        onClick={handleSubmit}
+                    >
+                        {challenge ? `Complete ${challenge}` : 'Login'}
+                    </button>
+                )}
             </div>
             <div>
                 <p>{message}</p>

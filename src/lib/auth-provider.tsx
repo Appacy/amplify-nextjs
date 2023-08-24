@@ -3,7 +3,7 @@
 import { FC, createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Amplify, Auth, Hub } from "aws-amplify";
 import awsExports from "../aws-exports";
-import { Attributes, User, HubCapsule, AuthError } from './types';
+import { Attributes, User, HubCapsule, AuthError, Status } from './types';
 
 Amplify.configure({ ...awsExports, ssr: true });
 
@@ -16,6 +16,7 @@ export interface AuthContextModel {
     isAuthenticated: boolean;
     idToken?: string;
     attributes?: Attributes;
+    status: Status;
     logout: () => Promise<any>;
     login: (username: string, password: string, newPassword?: string) => Promise<AuthError | User>;
     isUser: (obj: User | AuthError) => boolean;
@@ -24,6 +25,7 @@ export interface AuthContextModel {
   
 const AuthContext = createContext<AuthContextModel>({
     isAuthenticated: false,
+    status: 'idle',
     logout: () => { return Promise.resolve() },
     login: (username: string, password: string, newPassword?: string) => { return Promise.resolve({}) },
     isUser: (obj: User | AuthError) => false,
@@ -33,6 +35,7 @@ const AuthContext = createContext<AuthContextModel>({
 
 const AuthProvider: FC<AuthProps> = ({children}) => { 
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+    const [status, setStatus] = useState<Status>('idle');
     const [idToken, setIdToken] = useState<string | undefined>();
     const [attributes, setAttributes] = useState<Attributes | undefined>();
 
@@ -170,16 +173,21 @@ const AuthProvider: FC<AuthProps> = ({children}) => {
     }
 
     async function login(username: string, password: string, newPassword?: string): Promise<User | AuthError> {
+        setStatus('pending');
         return await Auth.signIn({ username: username, password: password}).then(result => {
             if (isUser(result)){
                 if ((result as User).challengeName === 'NEW_PASSWORD_REQUIRED') {
-                    if (newPassword) Auth.completeNewPassword(result, newPassword);
+                    if (newPassword) Auth.completeNewPassword(result, newPassword).finally(() => {
+                        setStatus('idle');
+                    })
                 }
             }
             setUser(result as User);
+            setStatus('idle');
             return (result as User);
         }).catch(error => {
             console.log(error)
+            setStatus('idle');
             return {
                 message: error.name
             } as AuthError;
@@ -207,6 +215,7 @@ const AuthProvider: FC<AuthProps> = ({children}) => {
         isAuthenticated,
         idToken,
         attributes,
+        status,
         logout,
         login,
         isAuthError,

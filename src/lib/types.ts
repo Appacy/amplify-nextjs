@@ -32,3 +32,5 @@ export interface User extends AmplifyCognitoUser {
 export type AuthError = {
     message?: string;
 }
+
+export type Status = 'pending' | 'idle';
