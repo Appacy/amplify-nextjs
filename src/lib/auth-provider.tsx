@@ -243,7 +243,12 @@ const AuthProvider: FC<AuthProps> = ({children}) => {
                         break;               
                     }
                   }
-                } catch {}
+                } catch (error) {
+                    console.log(error);
+                    return {
+                        message: `Unknown error. See console.`
+                    };
+                }
                 setStatus('idle')
                 return result;
             },    
