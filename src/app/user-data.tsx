@@ -17,8 +17,8 @@ export default function UserData() {
             <p><strong>IsAuthenticated:</strong> {isAuthenticated ? 'true' : 'false'}</p>
             {isAuthenticated && (
                 <>
-                    <p><strong>Authenticated At:</strong> {idTokenPayload?.auth_time && new Date(idTokenPayload?.auth_time * 1000).toUTCString()}</p>
-                    <p><strong>Token Expiry:</strong> {idTokenPayload?.exp && new Date(idTokenPayload.exp * 1000).toUTCString()}</p>
+                    <p><strong>Authenticated At:</strong> {idTokenPayload?.auth_time && new Date(idTokenPayload?.auth_time * 1000).toLocaleString()}</p>
+                    <p><strong>Token Expiry:</strong> {idTokenPayload?.exp && new Date(idTokenPayload.exp * 1000).toLocaleString()}</p>
                 </>
             )}
             <br />

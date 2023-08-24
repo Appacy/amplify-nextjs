@@ -7,7 +7,6 @@ import { Attributes, User, HubCapsule, AuthError, Status, TokenPayload } from '.
 
 Amplify.configure({ ...awsExports, ssr: true });
 
-
 type AuthProps = {
     children?: ReactNode
 }

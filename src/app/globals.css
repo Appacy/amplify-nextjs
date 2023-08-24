@@ -24,6 +24,14 @@ input, button {
   padding: 10px;
 }
 
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
 .wrapper {
   display: flex;
   flex-direction: column;

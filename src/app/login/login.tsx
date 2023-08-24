@@ -36,10 +36,11 @@ export default function DoLogin() {
             if (isUser(result)) {
                 if ((result as User).getSignInUserSession()?.isValid()) {
                     setMessage(`Logged in as ${(result as User).attributes?.email}. Redirecting to home page...`);
+                    setChallenge(undefined);
                     setTimeout(() => {
                         router.push('/');
                     },2000)
-                } else if (challenge && challenge === 'NEW_PASSWORD_REQUIRED' && formData.newPassword.length) {
+                } else if ((result as User).challengeName === 'NEW_PASSWORD_REQUIRED' && formData.newPassword.length) {
                     completeNewPassword((result as User), formData.newPassword).then(data => {
                         if (isUser(data)) {
                             setMessage(`New password complete. Logged in as ${(result as User).attributes?.email}. Redirecting to home page...`);
@@ -69,7 +70,7 @@ export default function DoLogin() {
 
     return (
         <form>
-            <div>
+            <div style={{marginBlockEnd: '20px'}}>
                 <p>Test credentials (User Group): test@appacy.dev / password1</p>
                 <p>Test credentials (Admin Group): test1@appacy.dev / password1</p>
             </div>
@@ -122,6 +123,7 @@ export default function DoLogin() {
                 ) : (
                     <button 
                         type='button' 
+                        disabled={isAuthenticated}
                         onClick={handleSubmit}
                     >
                         {challenge ? `Complete ${challenge}` : 'Login'}
