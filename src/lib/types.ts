@@ -34,3 +34,19 @@ export type AuthError = {
 }
 
 export type Status = 'pending' | 'idle';
+
+export type TokenPayload = {
+    aud?: string;
+    auth_time?: number;
+    'cognito:groups'?: string[];
+    'cognito:username'?: string;
+    email?: string;
+    event_id?: string;
+    exp?: number;
+    iat?: number;
+    iss?: string;
+    jti?: string;
+    origin_jti?: string;
+    sub?: string;
+    token_use?: string;
+}

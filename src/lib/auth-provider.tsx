@@ -3,7 +3,7 @@
 import { FC, createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { Amplify, Auth, Hub } from "aws-amplify";
 import awsExports from "../aws-exports";
-import { Attributes, User, HubCapsule, AuthError, Status } from './types';
+import { Attributes, User, HubCapsule, AuthError, Status, TokenPayload } from './types';
 
 Amplify.configure({ ...awsExports, ssr: true });
 
@@ -15,6 +15,7 @@ type AuthProps = {
 export interface AuthContextModel {
     isAuthenticated: boolean;
     idToken?: string;
+    idTokenPayload?: TokenPayload;
     attributes?: Attributes;
     status: Status;
     logout: () => Promise<any>;
@@ -39,6 +40,7 @@ const AuthProvider: FC<AuthProps> = ({children}) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [status, setStatus] = useState<Status>('idle');
     const [idToken, setIdToken] = useState<string | undefined>();
+    const [idTokenPayload, setIdTokenPayload] = useState<TokenPayload | undefined>();
     const [attributes, setAttributes] = useState<Attributes | undefined>();
 
     useEffect(() => {
@@ -149,6 +151,7 @@ const AuthProvider: FC<AuthProps> = ({children}) => {
             setIsAuthenticated(true);
             const attributes = user.attributes;
             const payload = user.getSignInUserSession()?.getIdToken().decodePayload();
+            if (payload) setIdTokenPayload(payload as TokenPayload)
             if (attributes) {
                 setAttributes({
                     sub: user.attributes?.sub,
@@ -173,6 +176,7 @@ const AuthProvider: FC<AuthProps> = ({children}) => {
     function resetUser() {
         setIsAuthenticated(false);
         setIdToken(undefined)
+        setIdTokenPayload(undefined);
         setAttributes(undefined);
     }
 
@@ -258,6 +262,7 @@ const AuthProvider: FC<AuthProps> = ({children}) => {
     const value: AuthContextModel = {
         isAuthenticated,
         idToken,
+        idTokenPayload,
         attributes,
         status,
         logout,

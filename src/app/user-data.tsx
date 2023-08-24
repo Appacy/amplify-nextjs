@@ -3,7 +3,7 @@
 import { useAuth } from '@/lib/auth-provider';
 
 export default function UserData() {
-    const { isAuthenticated, attributes } = useAuth();
+    const { isAuthenticated, idTokenPayload, attributes } = useAuth();
 
     if (!isAuthenticated) return (
         <div>
@@ -13,7 +13,15 @@ export default function UserData() {
     
     return (
         <div>
+            <h4 style={{marginBlockEnd: '20px', textAlign: 'center'}}>User Data</h4>
             <p><strong>IsAuthenticated:</strong> {isAuthenticated ? 'true' : 'false'}</p>
+            {isAuthenticated && (
+                <>
+                    <p><strong>Authenticated At:</strong> {idTokenPayload?.auth_time && new Date(idTokenPayload?.auth_time * 1000).toUTCString()}</p>
+                    <p><strong>Token Expiry:</strong> {idTokenPayload?.exp && new Date(idTokenPayload.exp * 1000).toUTCString()}</p>
+                </>
+            )}
+            <br />
             <p><strong>Sub:</strong> {attributes?.sub}</p>
             <p><strong>Username:</strong> {attributes?.email}</p>
             {attributes?.groups && (
