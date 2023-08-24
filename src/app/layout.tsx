@@ -33,6 +33,9 @@ export default function RootLayout({
               <LoginLogout />
             </header>
             {children}
+            <code>
+              Code: <a href='https://github.com/Appacy/amplify-nextjs' target='_blank'>https://github.com/Appacy/amplify-nextjs</a>
+            </code>
           </div>
         </AuthProvider>
       </body>

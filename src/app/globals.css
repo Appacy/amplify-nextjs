@@ -27,7 +27,9 @@ input, button {
 .wrapper {
   display: flex;
   flex-direction: column;
-  row-gap: 20px;
+  align-items: center;
+  min-height: 100vh;
+  row-gap: 50px;
 }
 
 .header {
