@@ -47,6 +47,9 @@ export default function DoLogin() {
                                 router.push('/');
                             },2000)
                         }
+                        if (isAuthError(result)) {
+                            setMessage(`Error completing new password:- ${(result as AuthError).message}`)
+                        }
                     })
                 } else {
                     const challengeName = (result as User).challengeName;
