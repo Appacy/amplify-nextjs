@@ -18,7 +18,8 @@ export interface AuthContextModel {
     attributes?: Attributes;
     status: Status;
     logout: () => Promise<any>;
-    login: (username: string, password: string, newPassword?: string) => Promise<AuthError | User>;
+    login: (username: string, password: string) => Promise<AuthError | User>;
+    completeNewPassword: (user: User, newPassword: string) => Promise<AuthError | User>;
     isUser: (obj: User | AuthError) => boolean;
     isAuthError: (obj: User | AuthError | string) => boolean;
 }
@@ -28,6 +29,7 @@ const AuthContext = createContext<AuthContextModel>({
     status: 'idle',
     logout: () => { return Promise.resolve() },
     login: (username: string, password: string, newPassword?: string) => { return Promise.resolve({}) },
+    completeNewPassword: (user: User, newPassword: string) => Promise.resolve({}),
     isUser: (obj: User | AuthError) => false,
     isAuthError: (obj: User | AuthError | string) => false,
 })
@@ -40,14 +42,7 @@ const AuthProvider: FC<AuthProps> = ({children}) => {
     const [attributes, setAttributes] = useState<Attributes | undefined>();
 
     useEffect(() => {
-        Auth.currentAuthenticatedUser().then((_user) => {
-            if (isUser(_user)) setUser((_user as User));
-        }).catch((error) => {
-            setIsAuthenticated(false);
-            setIdToken(undefined)
-            setAttributes(undefined);
-            console.log("Auth.currentAuthenticatedUser error", error);
-        })
+        setUserForced();
 
         return () => {
             resetUser();
@@ -166,49 +161,98 @@ const AuthProvider: FC<AuthProps> = ({children}) => {
         }
     }
 
+    function setUserForced() {
+        Auth.currentAuthenticatedUser().then((_user) => {
+            if (isUser(_user)) setUser((_user as User));
+        }).catch((error) => {
+            resetUser();
+            console.log("Auth.currentAuthenticatedUser error", error);
+        })
+    }
+
     function resetUser() {
         setIsAuthenticated(false);
         setIdToken(undefined)
         setAttributes(undefined);
     }
 
-    async function login(username: string, password: string, newPassword?: string): Promise<User | AuthError> {
-        setStatus('pending');
-        return await Auth.signIn({ username: username, password: password}).then(result => {
-            if (isUser(result)){
-                if ((result as User).challengeName === 'NEW_PASSWORD_REQUIRED') {
-                    if (newPassword) Auth.completeNewPassword(result, newPassword).finally(() => {
-                        setStatus('idle');
-                    })
-                }
-            }
-            setUser(result as User);
-            setStatus('idle');
-            return (result as User);
-        }).catch(error => {
-            console.log(error)
-            setStatus('idle');
-            return {
-                message: error.name
-            } as AuthError;
-        })
+    async function login(username: string, password: string): Promise<User | AuthError> {
+        return (await _authPromiseWrapper<User>(
+            Auth.signIn(
+              username, 
+              password
+            ), 
+            'signIn'
+            )
+        );
+    }
+
+    async function completeNewPassword(
+        user: User,
+        newPassword: string
+    ) {
+        return (await _authPromiseWrapper(
+            Auth.completeNewPassword(
+              user, 
+              newPassword
+            ),
+            'completeNewPassword'
+          ));
     }
 
     async function logout() {
-        await Auth.signOut().then(result => {
-            resetUser();
-            return result;
-        }).catch(error => {
-            return error;
-        });
+        return (await _authPromiseWrapper(
+            Auth.signOut(),
+            'signOut'
+        ))
     }
 
     function isUser(obj: User | AuthError): obj is User {
         return (obj as User).getSignInUserSession !== undefined;
-      }
+    }
     
-      function isAuthError(obj: User | AuthError | string): obj is AuthError {
+    function isAuthError(obj: User | AuthError | string): obj is AuthError {
         return (obj as AuthError).message !== undefined;
+    }
+
+    const _authPromiseWrapper = async <T,>(
+        promise: Promise<T>,
+        authType: 'signIn' | 'signOut' | 'completeNewPassword'
+      ): Promise<AuthError | T> => {
+        setStatus('pending')
+        let result: T;  
+        let error: AuthError;
+        return await promise.then(    
+            (r) => {
+                result = r;             
+                try {
+                  switch (authType) {
+                    case 'completeNewPassword': {
+                        setUserForced();
+                        break;
+                    }
+                    case 'signIn': {
+                        setUser(result as User);
+                        break;
+                    }
+                    case 'signOut': {
+                        resetUser(); 
+                        break;               
+                    }
+                  }
+                } catch {}
+                setStatus('idle')
+                return result;
+            },    
+            (e) => {     
+                error = {
+                  message: e.name
+                };
+                resetUser();
+                setStatus('idle')
+                return error;
+            }  
+        );
       }
     
     const value: AuthContextModel = {
@@ -218,6 +262,7 @@ const AuthProvider: FC<AuthProps> = ({children}) => {
         status,
         logout,
         login,
+        completeNewPassword,
         isAuthError,
         isUser
     }
