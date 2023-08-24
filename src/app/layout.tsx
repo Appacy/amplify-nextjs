@@ -29,7 +29,7 @@ export default function RootLayout({
           <div className='wrapper'>
             <div>
               <Image
-                src='/appacy.svg'
+                src='/appacy.png'
                 width={60}
                 height={60}
                 alt='Appacy Ltd'
