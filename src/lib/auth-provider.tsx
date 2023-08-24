@@ -220,7 +220,7 @@ const AuthProvider: FC<AuthProps> = ({children}) => {
 
     const _authPromiseWrapper = async <T,>(
         promise: Promise<T>,
-        authType: 'signIn' | 'signOut' | 'completeNewPassword'
+        authType: 'signIn' | 'signOut' | 'completeNewPassword',
       ): Promise<AuthError | T> => {
         setStatus('pending')
         let result: T;  

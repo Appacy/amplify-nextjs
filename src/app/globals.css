@@ -38,13 +38,15 @@ button:disabled {
   align-items: center;
   min-height: 100vh;
   row-gap: 50px;
+  padding: 50px 0;
 }
 
 .header {
   display: flex;
   justify-content: center;
   column-gap: 20px;
-  padding: 50px;
+  padding: 30px;
+  border-block-end: solid 1px lightgray;
 }
 
 .loading {

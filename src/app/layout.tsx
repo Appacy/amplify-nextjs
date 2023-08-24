@@ -5,6 +5,7 @@ import { Inter } from 'next/font/google'
 import { Amplify } from 'aws-amplify'
 import awsExports from "../aws-exports";
 import dynamic from 'next/dynamic';
+import Image from 'next/image'
 
 const LoginLogout = dynamic(() => import("./login-logout"), { ssr: false });
 
@@ -26,6 +27,14 @@ export default function RootLayout({
       <body className={inter.className}>
         <AuthProvider>
           <div className='wrapper'>
+            <div>
+              <Image
+                src='/appacy.svg'
+                width={60}
+                height={60}
+                alt='Appacy Ltd'
+              />
+            </div>
             <header className='header'>
               <a href="/">Home Page</a>
               <a href="/protected-admin">Protected (Admin Group)</a>
