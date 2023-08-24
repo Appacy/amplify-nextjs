@@ -4,6 +4,9 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { Amplify } from 'aws-amplify'
 import awsExports from "../aws-exports";
+import dynamic from 'next/dynamic';
+
+const LoginLogout = dynamic(() => import("./login-logout"), { ssr: false });
 
 Amplify.configure({ ...awsExports, ssr: true });
 
@@ -27,8 +30,7 @@ export default function RootLayout({
               <a href="/">Home Page</a>
               <a href="/protected-admin">Protected (Admin Group)</a>
               <a href="/protected-user">Protected (User Group)</a>
-              <a href="/login">Login</a>
-              <a href="/logout">Logout</a>
+              <LoginLogout />
             </header>
             {children}
           </div>

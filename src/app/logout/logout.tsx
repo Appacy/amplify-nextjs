@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/auth-provider';
 
 export default function DoLogout() {
-    const { logout } = useAuth();
+    const {logout, isAuthError} = useAuth();
     const [message, setMessage] = useState<string>('Logging out...');
     
     useEffect(() => {

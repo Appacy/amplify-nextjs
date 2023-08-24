@@ -1,9 +1,10 @@
 'use client'
 
-import { useEffect, useState, ChangeEvent, MouseEvent } from 'react';
+import { useState, ChangeEvent, MouseEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-provider';
 import { AuthError, User } from '@/lib/types';
+import { ChallengeName } from 'amazon-cognito-identity-js';
 
 type LoginFormData = {
     username: string,
@@ -12,9 +13,9 @@ type LoginFormData = {
 }
 export default function DoLogin() {
     const router = useRouter();
-    const { isAuthenticated, login, isUser, isAuthError } = useAuth();
+    const {isAuthenticated, login, isUser, isAuthError} = useAuth();
     const [message, setMessage] = useState<string>('');
-    const [challenge, setChallenge] = useState<string>();
+    const [challenge, setChallenge] = useState<ChallengeName>();
     const [formData, setFormData] = useState<LoginFormData>({
         username: '',
         password: '',
@@ -83,7 +84,7 @@ export default function DoLogin() {
                     onChange={handleChange}
                 />
             </div>
-            {(!isAuthenticated && challenge) && (
+            {(!isAuthenticated && challenge && challenge === 'NEW_PASSWORD_REQUIRED') && (
                 <div>
                     <label 
                         htmlFor='newPassword'

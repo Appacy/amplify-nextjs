@@ -158,6 +158,8 @@ const AuthProvider: FC<AuthProps> = ({children}) => {
                     groups: payload && payload['cognito:groups']
                 })
             }
+        } else {
+            resetUser();
         }
     }
 
@@ -169,7 +171,6 @@ const AuthProvider: FC<AuthProps> = ({children}) => {
 
     async function login(username: string, password: string, newPassword?: string): Promise<User | AuthError> {
         return await Auth.signIn({ username: username, password: password}).then(result => {
-            console.log(result);
             if (isUser(result)){
                 if ((result as User).challengeName === 'NEW_PASSWORD_REQUIRED') {
                     if (newPassword) Auth.completeNewPassword(result, newPassword);

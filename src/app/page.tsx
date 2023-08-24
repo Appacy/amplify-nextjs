@@ -1,6 +1,8 @@
 import Image from 'next/image'
 import styles from './page.module.css'
-import UserData from './user-data'
+import dynamic from 'next/dynamic';
+
+const UserData = dynamic(() => import("./user-data"), { ssr: false });
 
 export default function Home() {
   return (

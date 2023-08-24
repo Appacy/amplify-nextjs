@@ -1,8 +1,6 @@
 'use client'
 
-import { useEffect, useState, ChangeEvent, MouseEvent } from 'react';
 import { useAuth } from '@/lib/auth-provider';
-import { AuthError, User } from '@/lib/types';
 
 export default function UserData() {
     const { isAuthenticated, attributes } = useAuth();
