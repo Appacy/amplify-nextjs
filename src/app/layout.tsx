@@ -30,7 +30,7 @@ export default function RootLayout({
             <div>
               <a href='https://appacy.uk' target='_blank'>
                 <Image
-                  src='/appacy.svg'
+                  src='/appacy.png'
                   width={60}
                   height={60}
                   alt='Appacy Ltd'
