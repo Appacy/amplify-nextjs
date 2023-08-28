@@ -210,7 +210,10 @@ const AuthProvider: FC<AuthProps> = ({children}) => {
         setAttributes(undefined);
     }
 
-    async function login(username: string, password: string): Promise<User | AuthError> {
+    async function login(
+        username: string, 
+        password: string
+    ): Promise<User | AuthError> {
         return (await _authPromiseWrapper<User>(
             Auth.signIn(
               username, 
