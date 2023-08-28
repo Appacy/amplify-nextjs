@@ -4,8 +4,20 @@ import { FC, createContext, useContext, useState, useEffect, useCallback, ReactN
 import { Amplify, Auth, Hub } from "aws-amplify";
 import awsExports from "../aws-exports";
 import { Attributes, User, HubCapsule, AuthError, Status, TokenPayload } from './types';
+import { useAppDispatch } from './redux/hooks';
+import { 
+    setReset as redux_setReset, 
+    setIsAuthenticated as redux_setIsAuthenticated, 
+    setIdToken as redux_setIdToken, 
+    setIdTokenPayload as redux_setIdTokenPayload, 
+    setAttributes as redux_setAttributes,
+    setStatus as redux_setStatus,
+    setError as redux_setError
+} from './redux/reducers/auth/authSlice';
 
 Amplify.configure({ ...awsExports, ssr: true });
+
+const USE_REDUX: boolean = true;
 
 type AuthProps = {
     children?: ReactNode
@@ -41,12 +53,15 @@ const AuthProvider: FC<AuthProps> = ({children}) => {
     const [idToken, setIdToken] = useState<string | undefined>();
     const [idTokenPayload, setIdTokenPayload] = useState<TokenPayload | undefined>();
     const [attributes, setAttributes] = useState<Attributes | undefined>();
+    // Redux
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
         setUserForced();
 
         return () => {
             resetUser();
+            if (USE_REDUX) dispatch(redux_setReset());
         }
     }, [])
 
@@ -148,26 +163,42 @@ const AuthProvider: FC<AuthProps> = ({children}) => {
         ) {
             setIdToken(user.getSignInUserSession()!.getIdToken().getJwtToken())
             setIsAuthenticated(true);
+            if (USE_REDUX) {
+                dispatch(redux_setIdToken(user.getSignInUserSession()!.getIdToken().getJwtToken()));
+                dispatch(redux_setIsAuthenticated(true));
+            }
             const attributes = user.attributes;
             const payload = user.getSignInUserSession()?.getIdToken().decodePayload();
-            if (payload) setIdTokenPayload(payload as TokenPayload)
+            if (payload) {
+                setIdTokenPayload(payload as TokenPayload);
+                if (USE_REDUX) dispatch(redux_setIdTokenPayload(payload as TokenPayload))
+            }
             if (attributes) {
                 setAttributes({
                     sub: user.attributes?.sub,
                     email: user.attributes?.email,
                     groups: payload && payload['cognito:groups']
                 })
+                if (USE_REDUX) dispatch(redux_setAttributes({
+                    sub: user.attributes?.sub,
+                    email: user.attributes?.email,
+                    groups: payload && payload['cognito:groups']
+                }));
             }
         } else {
             resetUser();
+            if (USE_REDUX) dispatch(redux_setReset());
         }
     }
 
     function setUserForced() {
         Auth.currentAuthenticatedUser().then((_user) => {
-            if (isUser(_user)) setUser((_user as User));
+            if (isUser(_user)) {
+                setUser((_user as User));
+            }
         }).catch((error) => {
             resetUser();
+            if (USE_REDUX) dispatch(redux_setReset());
             console.log("Auth.currentAuthenticatedUser error", error);
         })
     }
@@ -223,6 +254,7 @@ const AuthProvider: FC<AuthProps> = ({children}) => {
         authType: 'signIn' | 'signOut' | 'completeNewPassword',
       ): Promise<AuthError | T> => {
         setStatus('pending')
+        if (USE_REDUX) dispatch(redux_setStatus('pending'));
         let result: T;  
         let error: AuthError;
         return await promise.then(    
@@ -240,6 +272,7 @@ const AuthProvider: FC<AuthProps> = ({children}) => {
                     }
                     case 'signOut': {
                         resetUser(); 
+                        if (USE_REDUX) dispatch(redux_setReset());
                         break;               
                     }
                   }
@@ -250,6 +283,7 @@ const AuthProvider: FC<AuthProps> = ({children}) => {
                     };
                 }
                 setStatus('idle')
+                if (USE_REDUX) dispatch(redux_setStatus('idle'));
                 return result;
             },    
             (e) => {     
@@ -257,7 +291,11 @@ const AuthProvider: FC<AuthProps> = ({children}) => {
                   message: e.name
                 };
                 resetUser();
-                setStatus('idle')
+                setStatus('idle');
+                if (USE_REDUX) {
+                    dispatch(redux_setReset());
+                    dispatch(redux_setStatus('idle'));
+                }
                 return error;
             }  
         );

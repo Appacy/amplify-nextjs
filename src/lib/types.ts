@@ -29,11 +29,9 @@ export interface User extends AmplifyCognitoUser {
     challengeParam?: ChallengeParam;
 }
 
-export type AuthError = {
-    message?: string;
-}
+export type AuthError = { message?: string; }
 
-export type Status = 'pending' | 'idle';
+export type Status = 'idle' | 'pending' | 'succeeded' | 'failed';
 
 export type TokenPayload = {
     aud?: string;

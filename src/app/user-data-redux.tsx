@@ -1,19 +1,21 @@
 'use client'
 
-import { useAuth } from '@/lib/auth-provider';
+import { useAppSelector } from '@/lib/redux/hooks';
 
 export default function UserData() {
-    const { isAuthenticated, idTokenPayload, attributes } = useAuth();
+    const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+    const idTokenPayload = useAppSelector((state) => state.auth.idTokenPayload);
+    const attributes = useAppSelector((state) => state.auth.attributes);
 
     if (!isAuthenticated) return (
         <div>
-            <h4>Not Authenticated (AuthProvider)</h4>
+            <h4>Not Authenticated (Redux)</h4>
         </div>
     );
     
     return (
         <div>
-            <h4 style={{marginBlockEnd: '20px', textAlign: 'center'}}>User Data (AuthProvider)</h4>
+            <h4 style={{marginBlockEnd: '20px', textAlign: 'center'}}>User Data (Redux)</h4>
             <p><strong>IsAuthenticated:</strong> {isAuthenticated ? 'true' : 'false'}</p>
             {isAuthenticated && (
                 <>

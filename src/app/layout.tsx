@@ -1,4 +1,3 @@
-import { AuthProvider } from '@/lib/auth-provider'
 import'./globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
@@ -6,6 +5,7 @@ import { Amplify } from 'aws-amplify'
 import awsExports from "../aws-exports";
 import dynamic from 'next/dynamic';
 import Image from 'next/image'
+import Providers from '@/lib/providers';
 
 const LoginLogout = dynamic(() => import("./login-logout"), { ssr: false });
 
@@ -25,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AuthProvider>
+        <Providers>
           <div className='wrapper'>
             <div>
               <a href='https://appacy.uk' target='_blank'>
@@ -48,7 +48,7 @@ export default function RootLayout({
               Code: <a href='https://github.com/Appacy/amplify-nextjs' target='_blank'>https://github.com/Appacy/amplify-nextjs</a>
             </code>
           </div>
-        </AuthProvider>
+        </Providers>
       </body>
     </html>
   )
