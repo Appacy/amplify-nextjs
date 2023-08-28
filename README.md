@@ -4,18 +4,8 @@
 
 - Next.js v13.4.12
 - AWS Amplify
--- Auth using the SDK NOT the built in Authenticator UI
+- - Auth using the SDK NOT the built in Authenticator UI
 - Protected page based on Cognito Group
-- Auth context provider to manage auth
+- Auth context provider to manage 
+- Redux for state management
 - Typescript
-
-## To run (assuming you have an AWS account):
-
-1) Clone the repo and remove the amplify folder.
-2) Install the Amplify cli.
-3) Run `amplify configure` and follow the prompts (if required)
-4) Run `amplify init` and follow prompts
-5) Run `amplify add auth` and follow prompts using defaults but adding two groups, `Admin` and `User`
-6) Run `amplify push` to create resources on the cloud
-7) Publish to Github repo and connect to Amplify app in AWS console
-
