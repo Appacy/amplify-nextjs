@@ -6,7 +6,6 @@ export interface AuthState {
     idToken?: string;
     idTokenPayload?: TokenPayload;
     attributes?: Attributes;
-    user?: User;
     status: Status;
     error?: AuthError;
 }
