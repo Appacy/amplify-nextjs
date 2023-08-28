@@ -8,11 +8,18 @@ type ProtectedProps = {
 type ProtectedStatus = 'NotAuthenticated' | 'NotAuthorised' | 'Authorised';
 
 export default async function ProtectedRoute({allowedGroups}: ProtectedProps): Promise<ProtectedStatus> {
-    const req = {
-        headers: {
-            cookie: headers().get("cookie"),
-        },
-    };
+    let req;
+    try {
+        req = {
+            headers: {
+                cookie: headers().get("cookie"),
+            },
+        };
+    } catch (error) {
+        console.log(error);
+        return 'NotAuthenticated';
+    }
+    
     const { Auth } = withSSRContext({ req });
     if (Auth === null || Auth === undefined) return 'NotAuthenticated';
 

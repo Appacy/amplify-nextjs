@@ -28,18 +28,16 @@ export default function RootLayout({
         <Providers>
           <div className='wrapper'>
             <div>
-              <a href='https://appacy.uk' target='_blank'>
-                <Image
-                  src='/appacy.png'
-                  width={60}
-                  height={60}
-                  alt='Appacy Ltd'
-                />
-              </a>
+              <Image
+                src='/appacy.png'
+                width={60}
+                height={60}
+                alt='Appacy Ltd'
+              />
             </div>
             <header className='header'>
               <a href="/">Home Page</a>
-              <a href="/protected-admin">Protected (Admin Group)</a>
+              <a href="/admin/page1">Protected (Admin Group)</a>
               <a href="/protected-user">Protected (User Group)</a>
               <LoginLogout />
             </header>
